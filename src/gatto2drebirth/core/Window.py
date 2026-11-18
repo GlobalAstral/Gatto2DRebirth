@@ -1,0 +1,75 @@
+
+from .Vec2 import Vec2
+from .EventDispatcher import EventDispatcher
+from enum import IntFlag, auto
+import pygame
+
+from .EventHandling import *
+
+if __name__ != '__main__' :
+  pygame.init()
+
+class Window(EventDispatcher) :
+  class Flags(IntFlag) :
+    NONE = 0
+    FULLSCREEN = auto()
+    FULLSCREEN_DESKTOP = auto()
+    OPENGL = auto()
+    VULKAN = auto()
+    HIDDEN = auto()
+    BORDERLESS = auto()
+    RESIZABLE = auto()
+    MINIMIZED = auto()
+    MAXIMIZED = auto()
+    MOUSE_GRABBED = auto()
+    KEYBOARD_GRABBED = auto()
+    INPUT_FOCUS = auto()
+    MOUSE_FOCUS = auto()
+    ALLOW_HIGH_DPI = auto()
+    MOUSE_CAPTURE = auto()
+    ALWAYS_ON_TOP = auto()
+    UTILITY = auto()
+
+  @staticmethod
+  def __deserialize_flags__(flags: Flags) -> dict[str, bool] :
+    return { str(flag.name).lower(): bool(flags & flag) for flag in Window.Flags }
+
+  def __init__(self, title: str, size: Vec2, flags: Flags) -> None:
+    super().__init__()
+    self.__win__: pygame.Window = pygame.Window(
+      title,
+      size.as_tuple(),
+      pygame.WINDOWPOS_CENTERED,
+      **Window.__deserialize_flags__(flags)
+    )
+
+    self.__surface__ = self.__win__.get_surface()
+    self.__running__ = True
+    self.__clock__ = pygame.time.Clock()
+  
+  def _update(self, dt: float) -> None :
+    self.__surface__.fill('black')
+    return super()._update(dt)
+
+  def mainloop(self, fps: float = 60) -> None :
+    self._setup()
+
+    while self.__running__ :
+      for event in pygame.event.get() :
+        if event.type == pygame.QUIT :
+          self.__running__ = False
+          continue
+
+        if event.type == pygame.WINDOWRESIZED or event.type == pygame.WINDOWRESTORED or event.type == pygame.WINDOWSIZECHANGED or event.type == pygame.WINDOWMINIMIZED or event.type == pygame.WINDOWMAXIMIZED:
+          self._render(Vec2(*self.__win__.size))
+
+        ev_type = EventType(event.type) if isinstance(event.type, EventType) else event.type
+        ev: Event = Event(ev_type, event)
+
+        self._runEvent(ev)
+
+      dt = self.__clock__.tick(fps) / 1000.0
+
+      self._update(dt)
+
+      self._render(Vec2(*self.__win__.size))

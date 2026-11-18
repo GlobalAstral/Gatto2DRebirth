@@ -1,0 +1,15 @@
+[project]
+name = "gatto2drebirth"
+version = "0.1.0"
+description = "A lightweight 2D game engine"
+requires-python = ">=3.15"
+dependencies = [
+  "pygame-ce>=2.5"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.setuptools.packages.find]
+where = ["src"]
