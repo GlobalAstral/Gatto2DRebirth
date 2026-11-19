@@ -2,6 +2,7 @@
 from .Vec2 import Vec2
 from .EventDispatcher import EventDispatcher
 from typing import Self
+import pygame
 
 class Parent(EventDispatcher) :
   def __init__(self) -> None:
@@ -40,9 +41,9 @@ class Parent(EventDispatcher) :
     super()._setup()
     for child in self : child._runSetup()
 
-  def _render(self, winSize: Vec2) -> None:
-    super()._render(winSize)
-    for child in self : child._runRender(winSize)
+  def _render(self, surface: pygame.Surface, winSize: Vec2) -> None:
+    super()._render(surface, winSize)
+    for child in self : child._runRender(surface, winSize)
 
   def _update(self, dt: float) -> None:
     super()._update(dt)

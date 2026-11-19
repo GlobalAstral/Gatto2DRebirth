@@ -61,7 +61,7 @@ class Window(Parent) :
           continue
 
         if event.type == pygame.WINDOWRESIZED or event.type == pygame.WINDOWRESTORED or event.type == pygame.WINDOWSIZECHANGED or event.type == pygame.WINDOWMINIMIZED or event.type == pygame.WINDOWMAXIMIZED:
-          self._render(Vec2(*self.__win__.size))
+          self._render(self.__surface__, Vec2(*self.__win__.size))
 
         ev_type = EventType(event.type) if isinstance(event.type, EventType) else event.type
         ev: Event = Event(ev_type, event)
@@ -72,4 +72,4 @@ class Window(Parent) :
 
       self._update(dt)
 
-      self._render(Vec2(*self.__win__.size))
+      self._render(self.__surface__, Vec2(*self.__win__.size))

@@ -6,14 +6,14 @@ class EventDispatcher :
   def __init__(self) -> None:
     self.__eventListeners__: dict[EventType | int, list[Callable[[Event], None]]] = {type: [] for type in EventType}
     self.__updateListeners__: list[Callable[[float], None]] = []
-    self.__renderListeners__: list[Callable[[Vec2], None]] = []
+    self.__renderListeners__: list[Callable[[pygame.Surface, Vec2], None]] = []
     self.__setupListeners__: list[Callable[[], None]] = []
 
   def addEventListener(self, event: EventType | int, listener: Callable[[Event], None]) -> None :
     self.__eventListeners__[event].append(listener)
   def addUpdateListener(self, listener: Callable[[float], None]) -> None :
     self.__updateListeners__.append(listener)
-  def addRenderListener(self, listener: Callable[[Vec2], None]) -> None :
+  def addRenderListener(self, listener: Callable[[pygame.Surface, Vec2], None]) -> None :
     self.__renderListeners__.append(listener)
   def addSetupListener(self, listener: Callable[[], None]) -> None :
     self.__setupListeners__.append(listener)
@@ -23,8 +23,8 @@ class EventDispatcher :
       print(f"Executing: {listener!r}")
       listener()
 
-  def _runRender(self, size: Vec2) -> None :
-    for listener in self.__renderListeners__ : listener(size)
+  def _runRender(self, surface: pygame.Surface,  size: Vec2) -> None :
+    for listener in self.__renderListeners__ : listener(surface, size)
 
   def _runUpdate(self, dt: float) -> None :
     for listener in self.__updateListeners__ : listener(dt)
@@ -35,8 +35,8 @@ class EventDispatcher :
   def _update(self, dt: float) -> None :
     self._runUpdate(dt)
 
-  def _render(self, winSize: Vec2) -> None :
-    self._runRender(winSize)
+  def _render(self, surface: pygame.Surface, winSize: Vec2) -> None :
+    self._runRender(surface, winSize)
 
   def _setup(self) -> None :
     self._runSetup()
