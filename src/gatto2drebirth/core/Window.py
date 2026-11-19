@@ -1,6 +1,6 @@
 
 from .Vec2 import Vec2
-from .EventDispatcher import EventDispatcher
+from .Entity import Parent
 from enum import IntFlag, auto
 import pygame
 
@@ -9,7 +9,7 @@ from .EventHandling import *
 if __name__ != '__main__' :
   pygame.init()
 
-class Window(EventDispatcher) :
+class Window(Parent) :
   class Flags(IntFlag) :
     NONE = 0
     FULLSCREEN = auto()

@@ -19,7 +19,9 @@ class EventDispatcher :
     self.__setupListeners__.append(listener)
 
   def _runSetup(self) -> None :
-    for listener in self.__setupListeners__ : listener()
+    for listener in self.__setupListeners__ :
+      print(f"Executing: {listener!r}")
+      listener()
 
   def _runRender(self, size: Vec2) -> None :
     for listener in self.__renderListeners__ : listener(size)
