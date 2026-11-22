@@ -12,6 +12,7 @@ class Parent(EventDispatcher) :
   def __iadd__(self, other: EventDispatcher | Entity | tuple[Entity, ...]) -> Self :
     if isinstance(other, Entity) :
       self._children.append(other)
+      other.parent = self
       return self
     
     if isinstance(other, EventDispatcher) :
@@ -39,16 +40,18 @@ class Parent(EventDispatcher) :
 
   def _setup(self) -> None:
     super()._setup()
-    for child in self : child._runSetup()
+    for child in self : child._setup()
 
   def _render(self, surface: pygame.Surface, winSize: Vec2) -> None:
     super()._render(surface, winSize)
-    for child in self : child._runRender(surface, winSize)
+    for child in self : child._render(surface, winSize)
 
   def _update(self, dt: float) -> None:
     super()._update(dt)
-    for child in self : child._runUpdate(dt)
+    for child in self : child._update(dt)
 
 class Entity(Parent) :
-  def __init__(self) -> None:
+  def __init__(self, parent: Parent | None = None) -> None:
     super().__init__()
+    self.parent: Parent | None = parent
+

@@ -12,7 +12,6 @@ def handle_operation(this: Vec2, other: object, operation: Callable[[number, num
   return NotImplemented
 
 class Vec2 :
-
   @staticmethod
   def handle_operation(this: Vec2, other: object, operation: Callable[[number, number], number]):
     if isinstance(other, int | float) :

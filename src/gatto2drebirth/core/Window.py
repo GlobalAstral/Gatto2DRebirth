@@ -43,13 +43,14 @@ class Window(Parent) :
       **Window.__deserialize_flags__(flags)
     )
 
-    self.__surface__ = self.__win__.get_surface()
+    self.__surface__ = lambda : self.__win__.get_surface()
     self.__running__ = True
     self.__clock__ = pygame.time.Clock()
-  
-  def _update(self, dt: float) -> None :
-    self.__surface__.fill('black')
-    return super()._update(dt)
+
+  def _render(self, surface: pygame.Surface, winSize: Vec2) -> None:
+    surface.fill('black')
+    super()._render(surface, winSize)
+    self.__win__.flip()
 
   def mainloop(self, fps: float = 60) -> None :
     self._setup()
@@ -60,10 +61,11 @@ class Window(Parent) :
           self.__running__ = False
           continue
 
-        if event.type == pygame.WINDOWRESIZED or event.type == pygame.WINDOWRESTORED or event.type == pygame.WINDOWSIZECHANGED or event.type == pygame.WINDOWMINIMIZED or event.type == pygame.WINDOWMAXIMIZED:
-          self._render(self.__surface__, Vec2(*self.__win__.size))
+        try:
+          ev_type = EventType(event.type)
+        except ValueError:
+          ev_type = event.type
 
-        ev_type = EventType(event.type) if isinstance(event.type, EventType) else event.type
         ev: Event = Event(ev_type, event)
 
         self._runEvent(ev)
@@ -72,4 +74,6 @@ class Window(Parent) :
 
       self._update(dt)
 
-      self._render(self.__surface__, Vec2(*self.__win__.size))
+      self._render(self.__surface__(), Vec2(*self.__win__.size))
+
+      
