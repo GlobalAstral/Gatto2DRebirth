@@ -1,6 +1,7 @@
 
 import struct
 from collections.abc import Callable
+from math import sqrt
 
 type number = int | float
 
@@ -71,6 +72,11 @@ class Vec2 :
   def __eq__(self, value: object) -> bool:
     if isinstance(value, Vec2) :
       return self.x == value.x and self.y == value.y
+    if isinstance(value, tuple) :
+      try :
+        return self.x == value[0] and self.y == value[1] # type: ignore
+      except Exception :
+        return NotImplemented
     return NotImplemented
 
   def __hash__(self) -> int:
@@ -84,3 +90,10 @@ class Vec2 :
 
   def as_tuple(self) -> tuple[number, number] :
     return (self.x, self.y)
+
+  def mag(self) -> number :
+    return sqrt(self.x * self.x + self.y * self.y)
+
+  def norm(self) -> Vec2 :
+    m = self.mag()
+    return Vec2(self.x / m, self.y / m)
