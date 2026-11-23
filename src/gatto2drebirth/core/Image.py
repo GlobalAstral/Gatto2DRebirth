@@ -31,10 +31,12 @@ class Texture :
   def load_whole(path: str, wh: Vec2 = Vec2(0, 0)) -> pygame.Surface :
     return Texture.load(path).whole(wh)
 
-  def section(self, uv: Vec2, wh: Vec2) -> pygame.Surface :
+  def section(self, uv: Vec2, swh: Vec2, wh : Vec2 = Vec2(0, 0) ) -> pygame.Surface :
     pos = uv * Actor.LENGTH_UNIT
-    alt: Vec2 = pos + wh * Actor.LENGTH_UNIT # type: ignore
+    alt: Vec2 = pos + swh * Actor.LENGTH_UNIT # type: ignore
     img = Texture._loaded_textures[self._id].crop((pos.x, pos.y, alt.x, alt.y)) # type: ignore
+    if wh != (0, 0) :
+      img = img.resize((wh * Actor.LENGTH_UNIT).as_tuple(), Image.Resampling.NEAREST) # type: ignore
     return pygame.image.frombytes(img.tobytes(), img.size, 'RGBA')
 
   def whole(self, wh: Vec2 = Vec2(0, 0)) -> pygame.Surface :
