@@ -1,11 +1,26 @@
 from ..core.Image import Texture
 from pathlib import Path
+from os import mkdir
+from enum import StrEnum
+
+class ImageFormat(StrEnum):
+  PNG = '.png'
+  JPG = '.jpg'
+  JPEG = '.jpeg'
+  BMP = '.bmp'
+  WEBP = '.webp'
+
+  @staticmethod
+  def contains(s: str) -> bool :
+    try :
+      ImageFormat(s)
+      return True
+    except ValueError :
+      return False
 
 class AssetsManager :
   _managers: dict[int, AssetsManager] = { }
   _count: int = 0
-
-  _IMAGE_EXTENSIONS: set[str] = { '.png', '.jpg', '.jpeg', '.bmp', '.webp' }
 
   @staticmethod
   def _id() -> int :
@@ -14,14 +29,21 @@ class AssetsManager :
     return temp
 
   @staticmethod
-  def retrieveImage(handle: int, path: str) -> Texture :
+  def retrieveImage(handle: int, path: str, extension: ImageFormat | None = None) -> Texture :
     manager = AssetsManager._managers[handle]
-    full_path = Path(f'{manager.namespace}/images/{path.replace('.', '/')}')
+    folder = Path(f'{manager.namespace}/images/')
+    if not folder.is_dir() :
+      mkdir(folder)
+
+    full_path = folder / f'{path.replace('.', '/')}'
+
+    if extension is not None :
+      full_path = full_path.with_suffix(f'{extension.value}')
 
     files: list[Path] = [
       file
       for file in full_path.parent.glob(f"{full_path.name}.*")
-      if file.is_file() and file.suffix.lower() in AssetsManager._IMAGE_EXTENSIONS
+      if file.is_file() and ImageFormat.contains(file.suffix.lower())
     ]
     if len(files) == 0 :
       raise FileNotFoundError(f'Image {full_path} does not exist')
